@@ -15,5 +15,8 @@ module.exports = (database) => {
       unique: true
     }
 
+  },
+  {
+    timestamps: false
   });
 };

@@ -41,5 +41,8 @@ module.exports = (database) => {
       allowNull: false 
     }
 
+  },
+  {
+    timestamps: false
   });
 };
