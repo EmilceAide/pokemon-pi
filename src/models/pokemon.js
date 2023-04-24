@@ -5,8 +5,8 @@ module.exports = (database) => {
  
   database.define('Pokemon', {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true, 
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV1,
       primaryKey: true
     }, 
     name: {
@@ -19,13 +19,16 @@ module.exports = (database) => {
       allowNull: false
     },
     hp:{
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false, 
     },
     attack: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false, 
     }, 
     defense: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false, 
     }, 
     speed: {
       type: DataTypes.INTEGER
@@ -35,10 +38,10 @@ module.exports = (database) => {
     },
     weight: {
       type: DataTypes.INTEGER
-    }, 
-    type: {
-      type: DataTypes.INTEGER,
-      allowNull: false 
+    },
+    created: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     }
 
   },
