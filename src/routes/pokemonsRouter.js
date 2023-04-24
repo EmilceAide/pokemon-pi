@@ -1,9 +1,11 @@
 const { Router } = require("express");
+const { validateCreate } = require("../middlewares/validateCreate")
 const {
   getPokemons,
   getPokemonById,
   createPokemon,
 } = require("../handlers/pokemonsHandler");
+
 
 const pokemonRouter = Router();
 
@@ -11,10 +13,7 @@ pokemonRouter.get("/", getPokemons);
 
 pokemonRouter.get("/:id", getPokemonById);
 
-// pokemonRouter.get("/name", getPokemonByName);
+pokemonRouter.post("/create", validateCreate,  createPokemon);
 
-pokemonRouter.post("/", createPokemon);
-
-// pokemonRouter.get('/types', )
 
 module.exports = pokemonRouter;
