@@ -32,11 +32,11 @@ let capsEntries = entries.map((entry) => [
 ]);
 database.models = Object.fromEntries(capsEntries);
 
-console.log("son mis modelos", database.models)
+// console.log("son mis modelos", database.models)
 const { Pokemon, Type } = database.models;
 
-
-
+Type.hasMany(Pokemon)
+Pokemon.belongsTo(Type)
 
 module.exports ={
     database, 
