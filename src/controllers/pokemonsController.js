@@ -26,6 +26,10 @@ const cleanArray = (arr) => {
         return {
             id: el.id, 
             name: el.name,
+            image: el.image, 
+            hp: el.hp, 
+            attack: el.attack, 
+            defense: el.defense,
             created: false
         }
     })
