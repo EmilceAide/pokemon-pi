@@ -32,7 +32,6 @@ let capsEntries = entries.map((entry) => [
 ]);
 database.models = Object.fromEntries(capsEntries);
 
-// console.log("son mis modelos", database.models)
 const { Pokemon, Type } = database.models;
 
 Type.belongsToMany(Pokemon, { through: 'Types_Pokemons' })
