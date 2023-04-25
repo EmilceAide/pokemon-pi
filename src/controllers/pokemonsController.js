@@ -1,4 +1,4 @@
-const { Pokemon } = require("../db");
+const { Pokemon, Type } = require("../db");
 const {
     getPokemonId,
     getPokemonName,
@@ -7,6 +7,24 @@ const {
    } = require('../service/axios')
 
 //! Pokemons 
+const arrPokemon = (element) => {
+    const dataPokemon = {
+        id: element.id,
+        name: element.forms[0].name,
+        image: element.sprites.other.home.front_shiny,
+        hp: element.stats.find((stat) => stat.stat.name === 'hp').base_stat,
+        attack: element.stats.find((stat) => stat.stat.name === 'attack').base_stat,
+        defense:  element.stats.find((stat) => stat.stat.name === 'defense').base_stat,
+        speed:  element.stats.find((stat) => stat.stat.name === 'speed').base_stat,
+        height: element.height,
+        weight: element.weight,
+        types: element.types.map(el => el.type.name).join(', ')
+    }
+
+    return dataPokemon;
+};
+
+
 const createPokemonController = async (name, image, hp, attack, defense, speed, height, weight, type) => {
 
   const newPokemon = await Pokemon.create({ name, image, hp, attack, defense, speed, height, weight, type});
@@ -17,21 +35,24 @@ const createPokemonController = async (name, image, hp, attack, defense, speed, 
 
 
 const getpokemonController = async (id, source) => {
-    const pokemon =
-    source === 'api' 
-    ? (await axios.get(`${id}`)).data
-    : await Pokemon.findByPk(id);
+    const pokemon = []; 
 
-    return pokemon;
+    const pokemonId = await getPokemonId(id).then(res => {
+        const data = []
+        data.push(res.data)
+        data.map(el => {
+            const dataPokemon = arrPokemon(el)
+            pokemon.push(dataPokemon)
+        }) 
+    });
+     
+    return source === 'bdd' ? await Pokemon.findByPk(id) : pokemon;
 };
 
 
-
-
 const getAllPokemons = async () =>{
-    // const dbPokemons = await Pokemon.findAll();
-
-    const pokemons = [];
+  
+    let pokemons = [];
      
     const apiPokemons = await getPokemons(10).then(async (res )=> {
        return  res.data.results
@@ -45,41 +66,42 @@ const getAllPokemons = async () =>{
     const detailPokemon = await Promise.all(apiPokemon)
     
     detailPokemon.map(data => {
-         const dataPokemon =  {
-                    id: data.id,
-                    name: data.forms[0].name,
-                    image: data.sprites.other.home.front_shiny,
-                    hp: data.stats.find((stat) => stat.stat.name === 'hp').base_stat,
-                    attack: data.stats.find((stat) => stat.stat.name === 'attack').base_stat,
-                    defense:  data.stats.find((stat) => stat.stat.name === 'defense').base_stat,
-                    speed:  data.stats.find((stat) => stat.stat.name === 'speed').base_stat,
-                    height: data.height,
-                    weight: data.weight,
-                }
+        const dataPokemon = arrPokemon(data)
          pokemons.push(dataPokemon)
-    })
+    });
 
-    // apiPokemons.setPokemon(typeId)
+  const dbPokemons = await Pokemon.findAll({
+    attributes: ['id', 'name', 'image', 'hp', 'attack', 'defense', 'speed', 'height', 'weight'],
+    order: [ ['id', 'ASC'],], 
+    include: { 
+        model: Type,
+        attributes: ['name'],
+        through: {
+            attributes: []
+        }
+    }
+  });
 
-
-  return pokemons 
+  return pokemons.concat(dbPokemons)
 };
 
 
 const pokemonByName = async (name) => {
+    const pokemon = [];
+
+    const apiPokemonsRaw = await getPokemonName(name).then(res => {
+        const data = []
+        data.push(res.data)
+        data.map(el => {
+            const dataPokemon = arrPokemon(el)
+            pokemon.push(dataPokemon)
+        }) 
+    })
+    
     const dbPokemons = await Pokemon.findAll({ where: {name: name}});
 
-    const apiPokemonsRaw = (await axios.get('')).data; 
-
-    const apiPokemons = cleanArray(apiPokemonsRaw); 
-
-    const filterPokemons = apiPokemons.filter(el => el.name === name)
-
-    const results = [...dbPokemons, ...filterPokemons];
-
-    return results; 
-}; 
-
+    return pokemon.concat(dbPokemons)
+};
 
 module.exports = {
     createPokemonController,
