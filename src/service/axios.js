@@ -14,6 +14,11 @@ const getPokemons = (amount) => {
   return  axios.get(`${URL_BASE}/pokemon?limit=${amount}`)
 };
 
+const getTypes = (type) =>{
+  if(!type) return axios.get(`${URL_BASE}/type`)
+  return axios.get(`${URL_BASE}/${type}`)
+};
+
 const getDataPokemon = (pokemon) => {
  return axios.get(pokemon)
 };
@@ -24,4 +29,5 @@ module.exports ={
  getPokemons, 
  getDataPokemon, 
  getDataPokemon,
+ getTypes,
 }
