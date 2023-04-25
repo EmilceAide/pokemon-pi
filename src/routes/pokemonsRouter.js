@@ -4,12 +4,15 @@ const {
   getPokemons,
   getPokemonById,
   createPokemon,
+  getPokemonName,
 } = require("../handlers/pokemonsHandler");
 
 
 const pokemonRouter = Router();
 
 pokemonRouter.get("/", getPokemons);
+
+pokemonRouter.get("/:name",  getPokemonName);
 
 pokemonRouter.get("/:id", getPokemonById);
 
