@@ -35,8 +35,8 @@ database.models = Object.fromEntries(capsEntries);
 // console.log("son mis modelos", database.models)
 const { Pokemon, Type } = database.models;
 
-Type.belongsToMany(Pokemon, { through: 'TypePokemon' })
-Pokemon.belongsToMany(Type, { through: 'TypePokemon' })
+Type.belongsToMany(Pokemon, { through: 'Types_Pokemons' })
+Pokemon.belongsToMany(Type, { through: 'Types_Pokemons' })
 
 module.exports ={
     database, 
