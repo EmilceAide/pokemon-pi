@@ -1,7 +1,12 @@
 const { Pokemon } = require("../db");
-const axios = require('axios'); 
+const {
+    getPokemonId,
+    getPokemonName,
+    getPokemons, 
+    getDataPokemon
+   } = require('../service/axios')
 
-
+//! Pokemons 
 const createPokemonController = async (name, image, hp, attack, defense, speed, height, weight, type) => {
 
   const newPokemon = await Pokemon.create({ name, image, hp, attack, defense, speed, height, weight, type});
@@ -21,32 +26,43 @@ const getpokemonController = async (id, source) => {
 };
 
 
-const cleanArray = (arr) => {
-    arr.map((el) => {
-        return {
-            id: el.id, 
-            name: el.name,
-            image: el.image, 
-            hp: el.hp, 
-            attack: el.attack, 
-            defense: el.defense,
-            created: false
-        }
-    })
 
-}; 
 
 const getAllPokemons = async () =>{
-    const dbPokemons = await Pokemon.findAll();
+    // const dbPokemons = await Pokemon.findAll();
 
-    const apiPokemonsRaw = (await axios.get('')).data; 
+    const pokemons = [];
+     
+    const apiPokemons = await getPokemons(10).then(async (res )=> {
+       return  res.data.results
+    });
 
-    const apiPokemons = cleanArray(apiPokemonsRaw); 
-    apiPokemons.setPokemon(typeId)
+    const apiPokemon = await apiPokemons.map(async (el) => {
+       const pokemon =  await getDataPokemon(el.url)
+       return pokemon.data
+    })
+    
+    const detailPokemon = await Promise.all(apiPokemon)
+    
+    detailPokemon.map(data => {
+         const dataPokemon =  {
+                    id: data.id,
+                    name: data.forms[0].name,
+                    image: data.sprites.other.home.front_shiny,
+                    hp: data.stats.find((stat) => stat.stat.name === 'hp').base_stat,
+                    attack: data.stats.find((stat) => stat.stat.name === 'attack').base_stat,
+                    defense:  data.stats.find((stat) => stat.stat.name === 'defense').base_stat,
+                    speed:  data.stats.find((stat) => stat.stat.name === 'speed').base_stat,
+                    height: data.height,
+                    weight: data.weight,
+                }
+         pokemons.push(dataPokemon)
+    })
 
-    const results = [...dbPokemons, ...apiPokemons];
+    // apiPokemons.setPokemon(typeId)
 
-    return results; 
+
+  return pokemons 
 };
 
 
