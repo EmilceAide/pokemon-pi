@@ -1,17 +1,17 @@
+require('dotenv').config();
 const axios = require('axios'); 
-
-const urlBase = 'https://pokeapi.co/api/v2/';
+const { URL_BASE } = process.env;
 
 const getPokemonId = (id) =>{
-   return  axios.get(`${urlBase}/pokemon/${id}`)
+   return  axios.get(`${URL_BASE}/pokemon/${id}`)
 };
 
 const getPokemonName = (name) =>{
-    return  axios.get(`${urlBase}/pokemon/${name}`)
+    return  axios.get(`${URL_BASE}/pokemon/${name}`)
 };
 
 const getPokemons = (amount) => {
-  return  axios.get(`${urlBase}/pokemon?limit=${amount}`)
+  return  axios.get(`${URL_BASE}/pokemon?limit=${amount}`)
 };
 
 const getDataPokemon = (pokemon) => {
