@@ -2,24 +2,29 @@ const { Type } = require("../db");
 const { getTypes } = require("../service/axios");
 
 const getPokemonTypes = async () => {
-    const types = [];
+
+  const types = [];
 
 	const data = await  getTypes().then(res =>{
         const dataTypePokemon = res.data.results;
         dataTypePokemon.map(el => types.push(el.name))
     })
+      
+  const dataTypePokemon = types.map(async ( el )=> {
+    await Type.findOrCreate({
+          where: { name: el},
+        });
+  } )
 
-    const create = await Type.findOrCreate({
-        where: { name: types},
+   const select = await Type.findAll({
+        attributes: ['id','name']
       });
 
-    const select = await Type.findAll({
-        attributes: ['name']
-      })
     const dataType = select.map(el => el)
+
     return dataType;
 };
 
 module.exports = {
-	getPokemonTypes
+	getPokemonTypes,
 }

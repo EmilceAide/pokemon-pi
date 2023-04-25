@@ -10,7 +10,7 @@ module.exports = (database) => {
       primaryKey: true
     }, 
     name: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
+      type: DataTypes.STRING,
     }
   },
   {

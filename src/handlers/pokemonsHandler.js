@@ -2,7 +2,9 @@ const { createPokemonController, getpokemonController, getAllPokemons, pokemonBy
 
 const getPokemons = async (req, res)=>{
     try {
-        const result =   await getAllPokemons()
+        const {name} = req.query
+
+        const result = !name ?   await getAllPokemons() : await pokemonByName(name) 
 
         res.status(200).json(result)
     } catch (error) {
@@ -26,7 +28,8 @@ const getPokemonName = async (req, res) =>{
 
 const getPokemonById = (req, res)=>{
     try {
-        const {id} = req.params; 
+        const {id} = req.params;
+
         const source = isNaN(id) ? 'bdd' : 'api'; 
          const pokemon = getpokemonController(id, source)
 
@@ -39,9 +42,9 @@ const getPokemonById = (req, res)=>{
 
 const createPokemon = async (req, res)=>{
     try {
-        const {name, image, hp, attack, defense, speed, height, weight, type} = req.body
+        const {name, image, hp, attack, defense, speed, height, weight, types} = req.body
 
-        const newPokemon = await createPokemonController(name, image, hp, attack, defense, speed, height, weight, type)
+        const newPokemon = await createPokemonController(name, image, hp, attack, defense, speed, height, weight, types)
   
         res.status(201).json(newPokemon)
 

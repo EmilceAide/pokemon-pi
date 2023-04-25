@@ -16,7 +16,7 @@ pokemonRouter.get("/:name",  getPokemonName);
 
 pokemonRouter.get("/:id", getPokemonById);
 
-pokemonRouter.post("/create", validateCreate,  createPokemon);
+pokemonRouter.post("/", validateCreate,  createPokemon);
 
 
 module.exports = pokemonRouter;

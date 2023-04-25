@@ -25,18 +25,10 @@ const arrPokemon = (element) => {
 };
 
 
-const createPokemonController = async (name, image, hp, attack, defense, speed, height, weight, type) => {
-
-  const newPokemon = await Pokemon.create({ name, image, hp, attack, defense, speed, height, weight, type});
-
-  return newPokemon; 
-
-};
-
 
 const getpokemonController = async (id, source) => {
     const pokemon = []; 
-
+    
     const pokemonId = await getPokemonId(id).then(res => {
         const data = []
         data.push(res.data)
@@ -45,44 +37,64 @@ const getpokemonController = async (id, source) => {
             pokemon.push(dataPokemon)
         }) 
     });
-     
+    
     return source === 'bdd' ? await Pokemon.findByPk(id) : pokemon;
 };
 
 
 const getAllPokemons = async () =>{
-  
+    
     let pokemons = [];
-     
+    
     const apiPokemons = await getPokemons(10).then(async (res )=> {
-       return  res.data.results
+        return  res.data.results
     });
-
+    
     const apiPokemon = await apiPokemons.map(async (el) => {
-       const pokemon =  await getDataPokemon(el.url)
-       return pokemon.data
+        const pokemon =  await getDataPokemon(el.url)
+        return pokemon.data
     })
     
     const detailPokemon = await Promise.all(apiPokemon)
     
     detailPokemon.map(data => {
         const dataPokemon = arrPokemon(data)
-         pokemons.push(dataPokemon)
+        pokemons.push(dataPokemon)
     });
-
-  const dbPokemons = await Pokemon.findAll({
-    attributes: ['id', 'name', 'image', 'hp', 'attack', 'defense', 'speed', 'height', 'weight'],
-    order: [ ['id', 'ASC'],], 
-    include: { 
-        model: Type,
-        attributes: ['name'],
-        through: {
-            attributes: []
+    
+    const dbPokemons = await Pokemon.findAll({
+        attributes: ['id', 'name', 'image', 'hp', 'attack', 'defense', 'speed', 'height', 'weight'],
+        order: [ ['id', 'DESC'],], 
+        include: { 
+            model: Type,
+            attributes: ['name'],
+            through: {
+                attributes: []
+            }
         }
-    }
-  });
+    });
+    
+    return pokemons.concat(dbPokemons)
+};
 
-  return pokemons.concat(dbPokemons)
+
+const createPokemonController = async (name, image, hp, attack, defense, speed, height, weight, types) => {
+
+  const allPokemons = await getAllPokemons();
+
+  const pokemonExists = allPokemons.find(pokemon => pokemon.name === name);
+
+  if (pokemonExists) {
+    throw new Error('El nombre ya existe.');
+  }
+
+  const newPokemon = await Pokemon.create({ name, image, hp, attack, defense, speed, height, weight });
+
+  const typesData = await Type.findAll({
+    attributes: ['name']
+  }); 
+
+  return newPokemon;
 };
 
 
@@ -107,5 +119,5 @@ module.exports = {
     createPokemonController,
     getpokemonController,
     getAllPokemons, 
-    pokemonByName
+    pokemonByName, 
 }
