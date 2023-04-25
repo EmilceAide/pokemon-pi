@@ -10,10 +10,8 @@ module.exports = (database) => {
       primaryKey: true
     }, 
     name: {
-      type: DataTypes.ENUM('normal', 'fighting', 'flying', 'poison', 'ground', 'rock', 'bug', 'ghost', 'steel', 'fire', 'water', 'grass', 'electric', 'psychic', 'ice', 'dragon', 'dark', 'fairy', 'shadow', 'unknown'),
-      allowNull: false, 
+      type: DataTypes.ARRAY(DataTypes.STRING),
     }
-
   },
   {
     timestamps: false
