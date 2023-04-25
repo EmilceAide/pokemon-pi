@@ -7,6 +7,8 @@ const {
    } = require('../service/axios')
 
 //! Pokemons 
+
+//?Función auxiliar
 const arrPokemon = (element) => {
     const dataPokemon = {
         id: element.id,
@@ -25,7 +27,7 @@ const arrPokemon = (element) => {
 };
 
 
-
+//*Función para traer todos por Id
 const getpokemonController = async (id, source) => {
     const pokemon = []; 
     
@@ -41,7 +43,7 @@ const getpokemonController = async (id, source) => {
     return source === 'bdd' ? await Pokemon.findByPk(id) : pokemon;
 };
 
-
+//*Función para traer todos
 const getAllPokemons = async () =>{
     
     let pokemons = [];
@@ -77,16 +79,16 @@ const getAllPokemons = async () =>{
     return pokemons.concat(dbPokemons)
 };
 
-
+//*Función para crear
 const createPokemonController = async (name, image, hp, attack, defense, speed, height, weight, types) => {
 
-  const allPokemons = await getAllPokemons();
+//   const allPokemons = await getAllPokemons();
 
-  const pokemonExists = allPokemons.find(pokemon => pokemon.name === name);
+//   const pokemonExists = allPokemons.find(pokemon => pokemon.name === name);
 
-  if (pokemonExists) {
-    throw new Error('El nombre ya existe.');
-  }
+//   if (pokemonExists) {
+//     throw new Error('El nombre ya existe.');
+//   }
 
   const newPokemon = await Pokemon.create({ name, image, hp, attack, defense, speed, height, weight });
 
@@ -94,10 +96,18 @@ const createPokemonController = async (name, image, hp, attack, defense, speed, 
     attributes: ['name']
   }); 
 
+  
+  for (const nameType of types) {
+    const type= await Type.create({name: nameType } );
+    if (type) {
+      await newPokemon.addTypes(type);
+    }
+}
+
   return newPokemon;
 };
 
-
+//*Función para traer por Name
 const pokemonByName = async (name) => {
     const pokemon = [];
 
