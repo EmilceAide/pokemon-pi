@@ -1,5 +1,8 @@
 const { createPokemonController, getpokemonController, getAllPokemons, pokemonByName  } = require('../controllers/pokemonsController')
 
+//!Handlers - Pokemons 
+
+//* Funcion para traer los pokemones
 const getPokemons = async (req, res)=>{
     try {
         const {name} = req.query
@@ -12,7 +15,7 @@ const getPokemons = async (req, res)=>{
     }
 };
 
-
+//* Funcion para traer los pokemones por Name
 const getPokemonName = async (req, res) =>{
     try {
         const {name} = req.params; 
@@ -25,7 +28,7 @@ const getPokemonName = async (req, res) =>{
     }
 };
 
-
+//* Funcion para traer los pokemones por Id
 const getPokemonById = (req, res)=>{
     try {
         const {id} = req.params;
@@ -39,7 +42,7 @@ const getPokemonById = (req, res)=>{
     }
 }; 
 
-
+//* Funcion para crear pokemones
 const createPokemon = async (req, res)=>{
     try {
         const {name, image, hp, attack, defense, speed, height, weight, types} = req.body

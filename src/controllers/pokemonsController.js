@@ -6,7 +6,7 @@ const {
     getDataPokemon
    } = require('../service/axios')
 
-//! Pokemons 
+//!Controllers - Pokemons 
 
 //?Función auxiliar
 const arrPokemon = (element) => {

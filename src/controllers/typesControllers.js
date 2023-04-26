@@ -1,7 +1,7 @@
 const { Type } = require("../db");
 const { getTypes } = require("../service/axios");
 
-//! Types Pokemons 
+//! Controllers - Types Pokemons 
 //*Función para traer todos los tipos de pokemons
 const getPokemonTypes = async () => {
 
