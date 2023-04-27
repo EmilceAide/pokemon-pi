@@ -48,7 +48,7 @@ const getAllPokemons = async () =>{
     
     let pokemons = [];
     
-    const apiPokemons = await getPokemons(10).then(async (res )=> {
+    const apiPokemons = await getPokemons(100).then(async (res )=> {
         return  res.data.results
     });
     
