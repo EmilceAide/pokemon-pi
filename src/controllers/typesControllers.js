@@ -19,10 +19,10 @@ const getPokemonTypes = async () => {
   } )
 
    const select = await Type.findAll({
-        attributes: ['id','name']
+        // attributes: ['id','name']
       });
 
-    const dataType = select.map(el => el)
+    const dataType = select.map(el => el.name)
 
     return dataType;
 };

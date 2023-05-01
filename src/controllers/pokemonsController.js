@@ -1,133 +1,160 @@
 const { Pokemon, Type } = require("../db");
 const {
-    getPokemonId,
-    getPokemonName,
-    getPokemons, 
-    getDataPokemon
-   } = require('../service/axios')
+  getPokemonId,
+  getPokemonName,
+  getPokemons,
+  getDataPokemon,
+} = require("../service/axios");
 
-//!Controllers - Pokemons 
+//!Controllers - Pokemons
 
 //?Función auxiliar
 const arrPokemon = (element) => {
-    const dataPokemon = {
-        id: element.id,
-        name: element.forms[0].name,
-        image: element.sprites.other.home.front_shiny,
-        hp: element.stats.find((stat) => stat.stat.name === 'hp').base_stat,
-        attack: element.stats.find((stat) => stat.stat.name === 'attack').base_stat,
-        defense:  element.stats.find((stat) => stat.stat.name === 'defense').base_stat,
-        speed:  element.stats.find((stat) => stat.stat.name === 'speed').base_stat,
-        height: element.height,
-        weight: element.weight,
-        types: element.types.map(el => el.type.name).join(', ')
-    }
+  const dataPokemon = {
+    id: element.id,
+    name: element.forms[0].name,
+    image: element.sprites.other.home.front_shiny,
+    hp: element.stats.find((stat) => stat.stat.name === "hp").base_stat,
+    attack: element.stats.find((stat) => stat.stat.name === "attack").base_stat,
+    defense: element.stats.find((stat) => stat.stat.name === "defense")
+      .base_stat,
+    speed: element.stats.find((stat) => stat.stat.name === "speed").base_stat,
+    height: element.height,
+    weight: element.weight,
+    types: element.types.map((el) => el.type.name).join(", "),
+    created: false,
+  };
 
-    return dataPokemon;
-};
-
-
-//*Función para traer todos por Id
-const getpokemonController = async (id, source) => {
-    const pokemon = []; 
-    
-    const pokemonId = await getPokemonId(id).then(res => {
-        const data = []
-        data.push(res.data)
-        data.map(el => {
-            const dataPokemon = arrPokemon(el)
-            pokemon.push(dataPokemon)
-        }) 
-    });
-    
-    return source === 'bdd' ? await Pokemon.findByPk(id) : pokemon;
+  return dataPokemon;
 };
 
 //*Función para traer todos
-const getAllPokemons = async () =>{
-    
-    let pokemons = [];
-    
-    const apiPokemons = await getPokemons(100).then(async (res )=> {
-        return  res.data.results
-    });
-    
-    const apiPokemon = await apiPokemons.map(async (el) => {
-        const pokemon =  await getDataPokemon(el.url)
-        return pokemon.data
-    })
-    
-    const detailPokemon = await Promise.all(apiPokemon)
-    
-    detailPokemon.map(data => {
-        const dataPokemon = arrPokemon(data)
-        pokemons.push(dataPokemon)
-    });
-    
-    const dbPokemons = await Pokemon.findAll({
-        attributes: ['id', 'name', 'image', 'hp', 'attack', 'defense', 'speed', 'height', 'weight'],
-        order: [ ['id', 'DESC'],], 
-        include: { 
-            model: Type,
-            attributes: ['name'],
-            through: {
-                attributes: []
-            }
-        }
-    });
-    
-    return pokemons.concat(dbPokemons)
+const getAllPokemons = async () => {
+  let pokemons = [];
+
+  const apiPokemons = await getPokemons(50).then(async (res) => {
+    return res.data.results;
+  });
+
+  const apiPokemon = await apiPokemons.map(async (el) => {
+    const pokemon = await getDataPokemon(el.url);
+    return pokemon.data;
+  });
+
+  const detailPokemon = await Promise.all(apiPokemon);
+
+  detailPokemon.map((data) => {
+    const dataPokemon = arrPokemon(data);
+    pokemons.push(dataPokemon);
+  });
+
+  const dbPokemons = await Pokemon.findAll({
+    attributes: [
+      "id",
+      "name",
+      "image",
+      "hp",
+      "attack",
+      "defense",
+      "speed",
+      "height",
+      "weight",
+      "created",
+    ],
+    order: [["id", "DESC"]],
+    include: {
+      model: Type,
+      attributes: ["name"],
+      through: {
+        attributes: [],
+      },
+    },
+  });
+
+  dbPokemons.map( el => pokemons.push(el))
+
+  return pokemons
+};
+
+//*Función para traer todos por Id
+const getPokemonController = async (id, source) => {
+  console.log('source', source)
+  if (source === "api") {
+    const pokemon = []; 
+      const pokemonData = await getPokemonId(id).then(res =>{
+        const element = res.data; 
+        pokemon.push(arrPokemon(element))
+      })
+    return pokemon;
+  } else {
+    const pokemon =[]
+    const pokemonData= await Pokemon.findByPk(id);
+    pokemon.push(pokemonData)
+    return pokemon
+  }
+  
 };
 
 //*Función para crear
-const createPokemonController = async (name, image, hp, attack, defense, speed, height, weight, types) => {
+const createPokemonController = async (
+  name,
+  image,
+  hp,
+  attack,
+  defense,
+  speed,
+  height,
+  weight,
+  types
+) => {
+  const allPokemons = await getAllPokemons();
 
-//   const allPokemons = await getAllPokemons();
+  const pokemonExists = allPokemons.find((pokemon) => pokemon.name === name);
 
-//   const pokemonExists = allPokemons.find(pokemon => pokemon.name === name);
+  if (pokemonExists) {
+    throw new Error("El nombre ya existe.");
+  }
 
-//   if (pokemonExists) {
-//     throw new Error('El nombre ya existe.');
-//   }
+  const newPokemon = await Pokemon.create({
+    name,
+    image,
+    hp,
+    attack,
+    defense,
+    speed,
+    height,
+    weight,
+  });
 
-  const newPokemon = await Pokemon.create({ name, image, hp, attack, defense, speed, height, weight });
-
-  const typesData = await Type.findAll({
-    attributes: ['name']
-  }); 
-
-  
   for (const nameType of types) {
-    const type= await Type.create({name: nameType } );
+    const type = await Type.create({ name: nameType });
     if (type) {
       await newPokemon.addTypes(type);
     }
-}
+  }
 
   return newPokemon;
 };
 
 //*Función para traer por Name
 const pokemonByName = async (name) => {
-    const pokemon = [];
 
-    const apiPokemonsRaw = await getPokemonName(name).then(res => {
-        const data = []
-        data.push(res.data)
-        data.map(el => {
-            const dataPokemon = arrPokemon(el)
-            pokemon.push(dataPokemon)
-        }) 
-    })
-    
-    const dbPokemons = await Pokemon.findAll({ where: {name: name}});
+  const pokemon = [];
 
-    return pokemon.concat(dbPokemons)
+  const data = await getAllPokemons()
+
+  const pokemonMap = data.map(el => {
+    if(el.name.toLowerCase() === name.toLowerCase()){
+      pokemon.push(el)
+    }
+  })
+
+  return pokemon
 };
 
 module.exports = {
-    createPokemonController,
-    getpokemonController,
-    getAllPokemons, 
-    pokemonByName, 
-}
+  createPokemonController,
+  getPokemonController,
+  getAllPokemons,
+  pokemonByName,
+};

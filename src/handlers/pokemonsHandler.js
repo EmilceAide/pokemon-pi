@@ -1,4 +1,4 @@
-const { createPokemonController, getpokemonController, getAllPokemons, pokemonByName  } = require('../controllers/pokemonsController')
+const { createPokemonController, getPokemonController, getAllPokemons, pokemonByName  } = require('../controllers/pokemonsController')
 
 //!Handlers - Pokemons 
 
@@ -11,34 +11,22 @@ const getPokemons = async (req, res)=>{
 
         res.status(200).json(result)
     } catch (error) {
-        return res.status(404).send({error: error.message})
-    }
-};
-
-//* Funcion para traer los pokemones por Name
-const getPokemonName = async (req, res) =>{
-    try {
-        const {name} = req.params; 
-
-        const result = await pokemonByName(name) 
-
-        res.status(200).json(result)
-    } catch (error) {
-        return res.status(404).send({error: error.message})
+        res.status(404).send({error: error.message})
     }
 };
 
 //* Funcion para traer los pokemones por Id
-const getPokemonById = (req, res)=>{
+const getPokemonById = async (req, res)=>{
+    const { id }= req.params;
+
+    const source = isNaN(id) ? 'bdd' : 'api'; 
+
     try {
-        const {id} = req.params;
+         const result = await  getPokemonController(id, source)
 
-        const source = isNaN(id) ? 'bdd' : 'api'; 
-         const pokemon = getpokemonController(id, source)
-
-        res.status(200).json(pokemon)
+        res.status(200).json(result)
     } catch (error) {
-        return res.status(404).send({error: error.message})
+        res.status(404).json({error: error.message})
     }
 }; 
 
@@ -59,6 +47,5 @@ const createPokemon = async (req, res)=>{
 module.exports ={
     getPokemons, 
     getPokemonById,
-    createPokemon,
-    getPokemonName
+    createPokemon
 }
