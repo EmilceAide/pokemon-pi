@@ -12,17 +12,17 @@ const getPokemonTypes = async () => {
         dataTypePokemon.map(el => types.push(el.name))
     })
       
-  const dataTypePokemon = types.map(async ( el )=> {
+  types.map(async ( el )=> {
     await Type.findOrCreate({
           where: { name: el},
         });
   } )
 
    const select = await Type.findAll({
-        // attributes: ['id','name']
+        attributes: ['id','name']
       });
 
-    const dataType = select.map(el => el.name)
+    const dataType = select.map(el => el)
 
     return dataType;
 };
