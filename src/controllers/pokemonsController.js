@@ -32,7 +32,7 @@ const arrPokemon = (element) => {
 const getAllPokemons = async () => {
   let pokemons = [];
 
-  const apiPokemons = await getPokemons(50).then(async (res) => {
+  const apiPokemons = await getPokemons(1281).then(async (res) => {
     return res.data.results;
   });
 
