@@ -5,6 +5,7 @@
 
 https://pokemon-pi-production-6a8f.up.railway.app/pokemons 
 
+Estructura: 
 ```json 
 [
   {
@@ -43,7 +44,11 @@ https://pokemon-pi-production-6a8f.up.railway.app/pokemons
   ]
 ```
 
+**GET**
+
 https://pokemon-pi-production-6a8f.up.railway.app/pokemons/{ id }
+
+Estructura: 
 ```json
 [
   {
@@ -80,6 +85,34 @@ Datos requeridos:
     "types": ["grass", "poison"]
   }
 ```
+### Descripción:
+
+### **name:** 
+Dato de tipo string. Representa el nombre del pokemón. 
+
+### **image:** 
+Dato de tipo string. Representa la imagen del pokemón. 
+
+### **hp:**
+Dato de tipo number. Representa la vida del pokemón. 
+
+### **attack:**
+Dato de tipo number. Representa poder de ataque del pokemón. 
+
+### **defense:** 
+Dato de tipo number. Representa poder de defensa del pokemón. 
+
+### **speed:**
+Dato de tipo number. Representa la velocidad del pokemón. 
+
+### **height:**
+Dato de tipo number. Representa la altura del pokemón. 
+
+### **weight:** 
+Dato de tipo number. Representa el peso del pokemón. 
+
+### **types:** 
+Dato de tipo array. Representa el tipo del pokemón (puede almacenar más de un tipo).
 
 
 ## **Types (endpoint)**
@@ -87,6 +120,7 @@ Datos requeridos:
 
 https://pokemon-pi-production-6a8f.up.railway.app/types
 
+Estructura: 
 ```json
  [
   {
